@@ -32,6 +32,7 @@ import java.util.concurrent.FutureTask;
  * - Call module.connectionsReady() -> module.initialize()
  */
 public abstract class AbstractSignalPathModule implements IDayListener, Serializable {
+	static final long serialVersionUID = 12354678L;
 
 	private SignalPath parentSignalPath;
 	private Integer initPriority = 50;
