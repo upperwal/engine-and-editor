@@ -95,6 +95,8 @@ grails.project.dependency.resolution = {
 		compile('com.fasterxml.jackson.core:jackson-annotations:2.9.6')
 		compile('com.streamr:client:1.2.2')
 
+		compile('in.soket:mesh:1.0')
+
 		compile('com.google.code.gson:gson:2.8.5')
 		runtime('mysql:mysql-connector-java:5.1.20')
 		runtime('commons-net:commons-net:3.3')

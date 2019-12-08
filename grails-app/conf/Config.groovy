@@ -8,7 +8,7 @@ import com.unifina.utils.PropertiesUtil
 def baseUrl = System.getProperty("streamr.url") ?: "http://localhost"
 environments {
 	production {
-		baseUrl = System.getProperty("streamr.url") ?: "https://streamr.network"
+		baseUrl = System.getProperty("streamr.url") ?: "https://app.pravah.io"
 	}
 }
 grails.serverURL = baseUrl
@@ -185,7 +185,7 @@ streamr.apiKey.revokeNotificationStream = "revoked-api-keys"
  * Application properties
  */
 // Where to send email reports
-unifina.reports.recipient = "henri.pihkala@streamr.com"
+unifina.reports.recipient = "report@soket.in"
 
 /**
  * Task config
@@ -330,12 +330,12 @@ grails {
 	}
 }
 
-unifina.email.sender = "contact@streamr.com"
+unifina.email.sender = "hi@pravah.io"
 unifina.email.waitForInvite.subject = "Thanks for signing up for Streamr"
 unifina.email.registerLink.subject = "Streamr signup link"
 unifina.email.invite.subject = "Invitation to Streamr"
 unifina.email.welcome.subject = "Welcome to Streamr"
-unifina.email.feedback.recipient = "contact@streamr.com"
+unifina.email.feedback.recipient = "hi@pravah.io"
 unifina.email.forgotPassword.subject = "Streamr Password Reset"
 unifina.email.shareInvite.subject = "%USER% wants to share a %RESOURCE% with you via Streamr Core"
 
