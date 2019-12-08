@@ -4,6 +4,7 @@ import com.streamr.client.StreamrClient;
 import com.unifina.datasource.DataSource;
 import com.unifina.datasource.HistoricalDataSource;
 import com.unifina.datasource.RealtimeDataSource;
+import com.unifina.datasource.RealtimePravahDataSource;
 import com.unifina.domain.security.SecUser;
 import com.unifina.security.permission.DataSourcePermission;
 import com.unifina.security.permission.StreamrClientPermission;
@@ -102,7 +103,7 @@ public class Globals {
 		}
 
 		if (dataSource == null && !mode.equals(Mode.NOT_PLANNING_TO_RUN)) {
-			this.dataSource = isRealtime() ? new RealtimeDataSource(this) : new HistoricalDataSource(this);
+			this.dataSource = isRealtime() ? new RealtimePravahDataSource(this) : new HistoricalDataSource(this);
 		} else {
 			this.dataSource = dataSource;
 		}
