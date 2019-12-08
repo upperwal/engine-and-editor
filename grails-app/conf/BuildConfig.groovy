@@ -74,7 +74,9 @@ grails.project.dependency.resolution = {
 		compile('biz.paluch.redis:lettuce:3.5.0.Final') {
 			excludes('com.google.guava:guava:*')
 		}
-		compile('com.datastax.cassandra:cassandra-driver-core:3.7.1')
+		compile('com.datastax.cassandra:cassandra-driver-core:3.7.1') {
+			excludes('com.google.guava:guava:*')
+		}
 		compile('com.google.code.findbugs:jsr305:3.0.2')
 		compile('org.jetbrains:annotations:17.0.0')
 		compile('org.ethereum:ethereumj-core:1.12.0-RELEASE') {
@@ -96,6 +98,7 @@ grails.project.dependency.resolution = {
 		compile('com.streamr:client:1.2.2')
 
 		compile('in.soket:mesh:1.0')
+		compile('com.google.guava:guava:20.0')
 
 		compile('com.google.code.gson:gson:2.8.5')
 		runtime('mysql:mysql-connector-java:5.1.20')
