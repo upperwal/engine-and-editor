@@ -1,13 +1,13 @@
 package com.unifina.feed;
 
-import com.streamr.client.rest.Stream;
 import com.streamr.client.utils.StreamPartition;
 import com.unifina.utils.Globals;
 import in.soket.MeshRPC;
 
+import java.io.Closeable;
 import java.util.Collection;
 
-public abstract class StreamPravahMessageSource extends StreamMessageSource {
+public abstract class StreamPravahMessageSource implements Closeable {
 
 	protected MeshRPC pravahRPC;
 
@@ -19,9 +19,11 @@ public abstract class StreamPravahMessageSource extends StreamMessageSource {
 	 * @param consumer
 	 * @param streamPartitions The set of StreamPartitions to subscribe to.
 	 */
-	public StreamPravahMessageSource(Globals globals, StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions) {
-		super(globals, consumer, streamPartitions);
+	public StreamPravahMessageSource(Globals globals, StreamMessageSource.StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions) {
+		//super(globals, consumer, streamPartitions);
 
 		pravahRPC = new MeshRPC("rpc.pravah.io", 5555);
 	}
+
+	public abstract void close();
 }
