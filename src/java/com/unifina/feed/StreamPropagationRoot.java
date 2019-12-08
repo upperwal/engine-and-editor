@@ -5,8 +5,10 @@ import com.unifina.datasource.DataSource;
 import com.unifina.exceptions.StreamFieldChangedException;
 import com.unifina.signalpath.AbstractSignalPathModule;
 import com.unifina.signalpath.Output;
+import com.unifina.signalpath.SignalPathRunner;
 import com.unifina.signalpath.TimeSeriesOutput;
 import com.unifina.signalpath.utils.ConfigurableStreamModule;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,6 +23,8 @@ import java.util.*;
  */
 public class StreamPropagationRoot extends AbstractPropagationRoot<ConfigurableStreamModule, StreamMessage> {
 
+	private static final Logger log = Logger.getLogger(StreamPropagationRoot.class);
+
 	private Map<String, List<Output>> outputsByName = null;
 
 	public StreamPropagationRoot(DataSource dataSource) {
@@ -29,6 +33,7 @@ public class StreamPropagationRoot extends AbstractPropagationRoot<ConfigurableS
 
 	@Override
 	protected void sendOutputFromModules(StreamMessage streamMessage) {
+		log.debug("Got output");
 		if (outputsByName == null) {
 			initCacheMap();
 		}
@@ -36,6 +41,7 @@ public class StreamPropagationRoot extends AbstractPropagationRoot<ConfigurableS
 		Map msg;
 		try {
 			msg = streamMessage.getContent();
+			log.debug("Message: " + msg.get("topic"));
 		} catch (IOException e) {
 			msg = new HashMap();
 		}

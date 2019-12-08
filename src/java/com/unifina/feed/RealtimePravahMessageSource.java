@@ -7,11 +7,14 @@ import com.streamr.client.utils.StreamPartition;
 import com.unifina.utils.Globals;
 import in.soket.Data;
 import in.soket.StreamCatcher;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
 
 public class RealtimePravahMessageSource extends StreamPravahMessageSource {
+
+	private static final Logger log = Logger.getLogger(RealtimePravahMessageSource.class);
 
 	public RealtimePravahMessageSource(Globals globals, StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions) {
 		super(globals, consumer, streamPartitions);
@@ -39,6 +42,9 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 		public void onNext(Data data) {
 			Map m = new LinkedHashMap();
 			m.put("topic", data.getTopic());
+
+			log.debug("StreamCatcherLogic: Got message");
+			log.debug("Message got: " + data.getTopic());
 
 			this.streamMessageConsumer.accept(new StreamMessage(
 					111,
