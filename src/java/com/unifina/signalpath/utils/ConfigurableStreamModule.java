@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  * Output from this module is written via StreamPropagationRoot.
  */
-public class ConfigurableStreamModule extends AbstractSignalPathModule {
+public class ConfigurableStreamModule extends ConfigurableModule {
 
 	private final StreamParameter streamParameter = new StreamParameter(this, "stream");
 	private Collection<Integer> selectedPartitions = null;

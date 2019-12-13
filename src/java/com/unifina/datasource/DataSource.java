@@ -9,8 +9,8 @@ import com.unifina.feed.StreamMessageSource;
 import com.unifina.feed.StreamPropagationRoot;
 import com.unifina.serialization.SerializationRequest;
 import com.unifina.signalpath.AbstractSignalPathModule;
+import com.unifina.signalpath.ConfigurableModule;
 import com.unifina.signalpath.SignalPath;
-import com.unifina.signalpath.utils.ConfigurableStreamModule;
 import com.unifina.utils.Globals;
 import org.apache.log4j.Logger;
 
@@ -69,8 +69,8 @@ public abstract class DataSource {
 	 * with other types of arguments, they will be ignored.
 	 */
 	private void register(Object o) {
-		if (o instanceof ConfigurableStreamModule) {
-			subscribe((ConfigurableStreamModule) o);
+		if (o instanceof ConfigurableModule) {
+			subscribe((ConfigurableModule) o);
 		}
 		if (o instanceof ITimeListener) {
 			eventQueue.addTimeListener((ITimeListener) o);
@@ -205,9 +205,9 @@ public abstract class DataSource {
 	 * For each subscribed StreamPartition, there is a StreamPropagationRoot which contains the
 	 * set of modules subscribed to that StreamPartition and acts as a propagation root.
 	 */
-	private void subscribe(ConfigurableStreamModule module) {
+	private void subscribe(ConfigurableModule module) {
 		Collection<StreamPartition> streamPartitions = module.getStreamPartitions();
-		log.debug("Registering ConfigurableStreamModule with streamPartitions: " + streamPartitions);
+		log.debug("Registering ConfigurableModule with streamPartitions: " + streamPartitions);
 
 		for (StreamPartition sp : streamPartitions) {
 

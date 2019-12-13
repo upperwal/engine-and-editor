@@ -18,22 +18,31 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 
 	private static final Logger log = Logger.getLogger(RealtimePravahMessageSource.class);
 
-	private List geo;
-	private final String channel = "/AirQuality";
+	private List geoArray;
+	private String channel;
 
 
 	public RealtimePravahMessageSource(Globals globals, StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions) {
 		super(globals, consumer, streamPartitions);
 
-		geo = new ArrayList<String>();
-		geo.add("/in/ncr");
+		for(StreamPartition sp : streamPartitions) {
+			String streamId = sp.getStreamId();
+			int idx = streamId.indexOf("/", 1);
+			channel = streamId.substring(0, idx);
+			String geo = streamId.substring(idx);
 
-		pravahRPC.subscribe(channel, geo, new StreamCatcherLogic(consumer));
+			geoArray = new ArrayList<String>();
+			geoArray.add(geo);
+
+			pravahRPC.subscribe(channel, geoArray, new StreamCatcherLogic(consumer));
+		}
+
+
 	}
 
 	@Override
 	public void close() {
-		pravahRPC.unsubscribe(channel, geo);
+		pravahRPC.unsubscribe(channel, geoArray);
 	}
 
 	private static class StreamCatcherLogic implements StreamCatcher {
@@ -58,8 +67,8 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 			m.put("start", "");
 			m.put("groupKey", "");
 
-			log.debug("StreamCatcherLogic: Got message");
-			log.debug("Message got: " + data.getTopic());
+			log.info("StreamCatcherLogic: Got message");
+			log.info("Message got: " + data.getTopic());
 
 			StreamMessageV28 msg = new StreamMessageV28(
 					data.getTopic(),
@@ -72,7 +81,7 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 					m
 			);
 
-			log.debug("After Msg formed");
+			log.info("After Msg formed");
 
 			this.streamMessageConsumer.accept(msg);
 		}

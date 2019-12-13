@@ -3,11 +3,7 @@ package com.unifina.feed;
 import com.streamr.client.protocol.message_layer.StreamMessage;
 import com.unifina.datasource.DataSource;
 import com.unifina.exceptions.StreamFieldChangedException;
-import com.unifina.signalpath.AbstractSignalPathModule;
-import com.unifina.signalpath.Output;
-import com.unifina.signalpath.SignalPathRunner;
-import com.unifina.signalpath.TimeSeriesOutput;
-import com.unifina.signalpath.utils.ConfigurableStreamModule;
+import com.unifina.signalpath.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -21,7 +17,7 @@ import java.util.*;
  *
  * Note that the value type is unchecked and must match with the output type.
  */
-public class StreamPropagationRoot extends AbstractPropagationRoot<ConfigurableStreamModule, StreamMessage> {
+public class StreamPropagationRoot extends AbstractPropagationRoot<ConfigurableModule, StreamMessage> {
 
 	private static final Logger log = Logger.getLogger(StreamPropagationRoot.class);
 

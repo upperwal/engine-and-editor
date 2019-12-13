@@ -8,7 +8,6 @@ import com.unifina.exceptions.ModuleExceptionMessage;
 import com.unifina.service.CanvasService;
 import com.unifina.service.ModuleService;
 import com.unifina.service.SerializationService;
-import com.unifina.signalpath.utils.ConfigurableStreamModule;
 import com.unifina.utils.Globals;
 import grails.converters.JSON;
 import grails.util.Holders;
@@ -407,8 +406,8 @@ public class SignalPath extends ModuleWithUI {
 	 */
 	public Set<Stream> getStreams() {
 		return mods.stream()
-			.filter(mod -> mod instanceof ConfigurableStreamModule)
-			.map(mod -> ((ConfigurableStreamModule)mod).getStream())
+			.filter(mod -> mod instanceof ConfigurableModule)
+			.map(mod -> ((ConfigurableModule)mod).getStream())
 			.collect(toSet());
 	}
 
