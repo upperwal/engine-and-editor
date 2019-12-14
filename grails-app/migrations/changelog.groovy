@@ -143,4 +143,5 @@ databaseChangeLog = {
 	include file: 'core/2019-09-27-stream-require-encrypted-data.groovy'
 	include file: 'core/2019-09-27-alter-pending-changes.groovy'
 	include file: 'core/2019-12-13-pravah-source-module.groovy'
+	imclude file: 'core/2019-12-14-add-stream-column.groovy'
 }

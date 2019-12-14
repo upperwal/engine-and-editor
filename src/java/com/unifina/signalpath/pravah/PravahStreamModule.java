@@ -3,6 +3,7 @@ package com.unifina.signalpath.pravah;
 import com.streamr.client.utils.StreamPartition;
 import com.unifina.domain.data.Stream;
 import com.unifina.signalpath.ConfigurableModule;
+import com.unifina.signalpath.StreamParameter;
 import com.unifina.signalpath.StringInput;
 import com.unifina.signalpath.StringOutput;
 
@@ -12,7 +13,8 @@ import java.util.LinkedHashMap;
 
 public class PravahStreamModule extends ConfigurableModule {
 
-	StringInput channelName = new StringInput(this, "channel");
+	StreamParameter streamParameter = new StreamParameter(this, "stream");
+	StringInput geospaceInput = new StringInput(this, "geospace");
 	StringOutput topicOutput = new StringOutput(this, "topic");
 	StringOutput rawOutput = new StringOutput(this, "raw");
 
@@ -20,7 +22,8 @@ public class PravahStreamModule extends ConfigurableModule {
 	public void init() {
 		super.init();
 
-		addInput(channelName);
+		addInput(streamParameter);
+		addInput(geospaceInput);
 		addOutput(topicOutput);
 		addOutput(rawOutput);
 	}
@@ -28,16 +31,16 @@ public class PravahStreamModule extends ConfigurableModule {
 	@Override
 	public Collection<StreamPartition> getStreamPartitions() {
 		Collection<StreamPartition> p = new ArrayList<>();
-		p.add(new StreamPartition(channelName.getValue(), 0));
+
+		String topic = new String(streamParameter.getValue().getChannel() + geospaceInput.getValue());
+		p.add(new StreamPartition(topic, 0));
 
 		return p;
 	}
 
 	@Override
 	public Stream getStream() {
-		Stream s = new Stream();
-		s.setId(channelName.getValue());
-		return s;
+		return streamParameter.getValue();
 	}
 
 	@Override

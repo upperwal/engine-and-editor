@@ -61,6 +61,7 @@ class StreamApiController {
 			Stream newStream = new Stream(request.JSON)
 			stream.name = newStream.name
 			stream.description = newStream.description
+			stream.channel = newStream.channel
 			stream.config = readConfig()
 			if (newStream.partitions != null) {
 				stream.partitions = newStream.partitions

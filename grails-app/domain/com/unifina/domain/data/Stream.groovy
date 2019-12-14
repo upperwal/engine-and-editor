@@ -18,6 +18,7 @@ class Stream implements Comparable {
 	String name = DEFAULT_NAME
 	String config
 	String description
+	String channel
 
 	Date firstHistoricalDay
 	Date lastHistoricalDay
