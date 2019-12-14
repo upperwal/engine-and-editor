@@ -20,7 +20,7 @@ public abstract class StreamPravahMessageSource extends StreamMessageSource {
 	 * @param streamPartitions The set of StreamPartitions to subscribe to.
 	 */
 	public StreamPravahMessageSource(Globals globals, StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions) {
-		super(globals, consumer, streamPartitions);
+		super(null, null, null, null);
 
 		pravahRPC = new MeshRPC("rpc.pravah.io", 5555);
 	}

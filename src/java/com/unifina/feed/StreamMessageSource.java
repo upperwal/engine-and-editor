@@ -27,6 +27,13 @@ public abstract class StreamMessageSource implements Closeable {
 	protected final StreamrClient streamrClient;
 	protected final HashMap<String, Stream> streamsByStreamId = new HashMap<>();
 
+	public StreamMessageSource(Globals globals, StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions, StreamrClient streamrClient) {
+		this.globals = globals;
+		this.consumer = consumer;
+		this.streamPartitions = streamPartitions;
+		this.streamrClient = streamrClient;
+	}
+
 	/**
 	 * Creates an instance of this StreamMessageSource. The constructor should not block.
 	 * Messages can be reported to the consumer as soon as they are available.
