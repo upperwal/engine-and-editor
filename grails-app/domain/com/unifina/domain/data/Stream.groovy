@@ -18,7 +18,7 @@ class Stream implements Comparable {
 	String name = DEFAULT_NAME
 	String config
 	String description
-	String channel
+	String channel = ""
 
 	Date firstHistoricalDay
 	Date lastHistoricalDay
@@ -55,6 +55,7 @@ class Stream implements Comparable {
 		name(blank:false)
 		config(nullable:true)
 		description(nullable:true)
+		channel(nullable:false)
 		firstHistoricalDay(nullable:true)
 		lastHistoricalDay(nullable:true)
 		uiChannelPath(nullable:true)
@@ -92,6 +93,7 @@ class Stream implements Comparable {
 			name: name,
 			config: config == null || config.empty ? config : JSON.parse(config),
 			description: description,
+			channel: channel,
 			uiChannel: uiChannel,
 			inbox: inbox,
 			dateCreated: dateCreated,
@@ -111,6 +113,7 @@ class Stream implements Comparable {
 			partitions: partitions,
 			name: name,
 			description: description,
+			channel: channel,
 			uiChannel: uiChannel,
 			inbox: inbox,
 			dateCreated: dateCreated,
