@@ -25,16 +25,19 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 
 	private static final Logger log = Logger.getLogger(RealtimePravahMessageSource.class);
 
-	private PravahTopic pravahTopic;
+	private List<PravahTopic> pravahTopicList;
 
 
 	public RealtimePravahMessageSource(Globals globals, StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions) {
 		super(globals, consumer, streamPartitions);
 
+		pravahTopicList = new ArrayList<>();
+
 		for(StreamPartition sp : streamPartitions) {
 			String streamId = sp.getStreamId();
 
-			pravahTopic = PravahTopic.getChannelAndTopic(streamId);
+			PravahTopic pravahTopic = PravahTopic.getChannelAndTopic(streamId);
+			pravahTopicList.add(pravahTopic);
 
 			log.info("Subscribing to: <" + streamId + ">");
 			pravahRPC.subscribe(pravahTopic.getChannel(), pravahTopic.getGeospaces(), new StreamCatcherLogic(consumer));
@@ -45,7 +48,9 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 
 	@Override
 	public void close() {
-		pravahRPC.unsubscribe(pravahTopic.getChannel(), pravahTopic.getGeospaces());
+		for(PravahTopic t : pravahTopicList) {
+			pravahRPC.unsubscribe(t.getChannel(), t.getGeospaces());
+		}
 	}
 
 	private static class StreamCatcherLogic implements StreamCatcher {
