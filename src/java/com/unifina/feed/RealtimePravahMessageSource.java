@@ -1,5 +1,9 @@
 package com.unifina.feed;
 
+import com.google.protobuf.Any;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.googlecode.protobuf.format.JsonFormat;
 import com.streamr.client.exceptions.EncryptedContentNotParsableException;
 import com.streamr.client.protocol.message_layer.MessageRef;
 import com.streamr.client.protocol.message_layer.StreamMessage;
@@ -8,7 +12,9 @@ import com.streamr.client.utils.StreamPartition;
 import com.unifina.utils.Globals;
 import in.soket.Data;
 import in.soket.StreamCatcher;
+import io.pravah.Decoder;
 import org.apache.log4j.Logger;
+import com.google.protobuf.Message;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -58,8 +64,11 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 			Map m = new LinkedHashMap();
 			m.put("topic", data.getTopic());
 			try {
-				m.put("raw", data.getRaw().toString("utf-8"));
-			} catch (UnsupportedEncodingException e) {
+				JsonFormat f = new JsonFormat();
+				Message protom = Decoder.decode("/AirQuality", data.getRaw());
+				String rawJSON = f.printToString(protom);
+				m.put("raw", rawJSON);
+			} catch (InvalidProtocolBufferException e) {
 				e.printStackTrace();
 			}
 

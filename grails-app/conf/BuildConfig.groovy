@@ -99,6 +99,7 @@ grails.project.dependency.resolution = {
 
 		compile('in.soket:mesh:1.0')
 		compile('com.google.guava:guava:20.0')
+		compile('com.googlecode.protobuf-java-format:protobuf-java-format:1.4')
 
 		compile('com.google.code.gson:gson:2.8.5')
 		runtime('mysql:mysql-connector-java:5.1.20')
