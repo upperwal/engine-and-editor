@@ -32,7 +32,9 @@ public class PravahStreamModule extends ConfigurableModule {
 	public Collection<StreamPartition> getStreamPartitions() {
 		Collection<StreamPartition> p = new ArrayList<>();
 
-		String topic = new String(streamParameter.getValue().getChannel() + geospaceInput.getValue());
+		String topic = new String(
+				streamParameter.getValue().getChannel() +
+						geospaceInput.getValue() == "null" ? "" : geospaceInput.getValue());
 		p.add(new StreamPartition(topic, 0));
 
 		return p;
