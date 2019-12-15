@@ -13,6 +13,7 @@ import com.unifina.utils.Globals;
 import in.soket.Data;
 import in.soket.StreamCatcher;
 import io.pravah.Decoder;
+import io.pravah.PravahTopic;
 import org.apache.log4j.Logger;
 import com.google.protobuf.Message;
 
@@ -24,8 +25,7 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 
 	private static final Logger log = Logger.getLogger(RealtimePravahMessageSource.class);
 
-	private List geoArray;
-	private String channel;
+	private PravahTopic pravahTopic;
 
 
 	public RealtimePravahMessageSource(Globals globals, StreamMessageConsumer consumer, Collection<StreamPartition> streamPartitions) {
@@ -33,14 +33,10 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 
 		for(StreamPartition sp : streamPartitions) {
 			String streamId = sp.getStreamId();
-			int idx = streamId.indexOf("/", 1);
-			channel = streamId.substring(0, idx);
-			String geo = streamId.substring(idx);
 
-			geoArray = new ArrayList<String>();
-			geoArray.add(geo);
+			pravahTopic = PravahTopic.getChannelAndTopic(streamId);
 
-			pravahRPC.subscribe(channel, geoArray, new StreamCatcherLogic(consumer));
+			pravahRPC.subscribe(pravahTopic.getChannel(), pravahTopic.getGeospaces(), new StreamCatcherLogic(consumer));
 		}
 
 
@@ -48,7 +44,7 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 
 	@Override
 	public void close() {
-		pravahRPC.unsubscribe(channel, geoArray);
+		pravahRPC.unsubscribe(pravahTopic.getChannel(), pravahTopic.getGeospaces());
 	}
 
 	private static class StreamCatcherLogic implements StreamCatcher {
@@ -63,9 +59,11 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 		public void onNext(Data data) {
 			Map m = new LinkedHashMap();
 			m.put("topic", data.getTopic());
+
+			PravahTopic topic = PravahTopic.getChannelAndTopic(data.getTopic());
 			try {
 				JsonFormat f = new JsonFormat();
-				Message protom = Decoder.decode("/AirQuality", data.getRaw());
+				Message protom = Decoder.decode(topic.getChannel(), data.getRaw());
 				String rawJSON = f.printToString(protom);
 				m.put("raw", rawJSON);
 			} catch (InvalidProtocolBufferException e) {
