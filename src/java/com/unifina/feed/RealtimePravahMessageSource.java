@@ -36,6 +36,7 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 
 			pravahTopic = PravahTopic.getChannelAndTopic(streamId);
 
+			log.info("Subscribing to: <" + streamId + ">");
 			pravahRPC.subscribe(pravahTopic.getChannel(), pravahTopic.getGeospaces(), new StreamCatcherLogic(consumer));
 		}
 
@@ -59,6 +60,7 @@ public class RealtimePravahMessageSource extends StreamPravahMessageSource {
 		public void onNext(Data data) {
 			Map m = new LinkedHashMap();
 			m.put("topic", data.getTopic());
+			log.info("Getting data for topic: <" + data.getTopic() + ">");
 
 			PravahTopic topic = PravahTopic.getChannelAndTopic(data.getTopic());
 			try {
