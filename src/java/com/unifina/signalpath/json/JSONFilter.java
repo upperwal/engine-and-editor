@@ -18,6 +18,9 @@ public class JSONFilter extends AbstractSignalPathModule {
 	public void init() {
 		super.init();
 
+		jsonParam.setDrivingInput(true);
+		jsonParam.setCanToggleDrivingInput(false);
+
 		addInput(jsonParam);
 		addInput(query);
 
@@ -27,7 +30,7 @@ public class JSONFilter extends AbstractSignalPathModule {
 	@Override
 	public void sendOutput() {
 		Configuration conf = Configuration.defaultConfiguration();
-		Object res = JsonPath.using(conf).parse(jsonParam.getValue()).read(query.getValue());
+		Object res = JsonPath.parse(jsonParam.getValue()).read(query.getValue());
 		filteredOutput.send(res.toString());
 	}
 
