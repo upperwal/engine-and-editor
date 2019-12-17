@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import io.pravah.air.quality.AirQuality;
+import io.pravah.solar.production.SolarProduction;
 import io.pravah.transit.GtfsRealtime;
 
 public class Decoder {
@@ -13,6 +14,8 @@ public class Decoder {
 				return AirQuality.FeedMessage.parseFrom(data);
 			case ChannelConst.PUBLIC_BUS:
 				return GtfsRealtime.FeedMessage.parseFrom(data);
+			case ChannelConst.SOLAR_POWER_PRODUCTION:
+				return SolarProduction.FeedMessage.parseFrom(data);
 			default:
 				return null;
 		}
