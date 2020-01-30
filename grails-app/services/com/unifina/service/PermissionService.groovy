@@ -118,6 +118,21 @@ class PermissionService {
 	}
 
 	/**
+	 * List all Permissions that have not expired yet with some Operation right granted on a resource
+	 */
+	List<Permission> getNonExpiredPermissionsTo(resource, Operation op) {
+		// TODO: find a way to do this in a single query instead of filtering results
+		List<Permission> results = []
+		Date now = new Date()
+		for (Permission p: getPermissionsTo(resource, op)) {
+			if (p.endsAt == null || p.endsAt.after(now)) {
+				results.add(p)
+			}
+		}
+		return results
+	}
+
+	/**
 	 * List all Permissions granted on a resource to a Userish
 	 */
 	List<Permission> getPermissionsTo(resource, Userish userish) {
@@ -279,6 +294,9 @@ class PermissionService {
 	}
 
 	Permission systemGrant(Userish target, resource, Operation operation=Operation.READ, Subscription subscription, Date endsAt) {
+		if (target == null) {
+			throw new IllegalArgumentException("Permission grant target can't be null");
+		}
 		target = target.resolveToUserish()
 		String userProp = getUserPropertyName(target)
 		String resourceProp = getResourcePropertyName(resource)
@@ -293,13 +311,10 @@ class PermissionService {
 
 		// When a user is granted read access (subscriber) or write access (publisher) to a stream,
 		// we need to set the corresponding inbox stream permissions (see methods comments below).
-		// TODO: re-enable after fixing permission table bloat issue
-		/*
-		if (userProp == "user" && resourceProp == "stream") {
+		if (userProp == "user" && resourceProp == "stream" && (endsAt == null || endsAt.after(new Date()))) {
 			checkAndGrantInboxPermissions((SecUser) target, (Stream) resource, operation,
 				subscription, endsAt, parentPermission)
 		}
-		 */
 
 		return parentPermission
 	}
@@ -339,7 +354,7 @@ class PermissionService {
 
 	private void grantInboxStreamPermissions(SecUser user, Stream stream, Operation operation,
 											 Subscription subscription, Date endsAt, Permission parent) {
-		List<SecUser> otherUsers = getPermissionsTo(stream, operation)*.user
+		List<SecUser> otherUsers = getNonExpiredPermissionsTo(stream, operation)*.user
 		otherUsers.removeIf { it == null || it.username == user.username }
 		// Need to initialize the service below this way because of circular dependencies issues
 		// Once we use Grails 3, this could be replaced with Grails Events
@@ -510,6 +525,11 @@ class PermissionService {
 			p.user = user
 			p.save(flush: true, failOnError: true)
 		}
+	}
+
+	public void cleanUpExpiredPermissions() {
+		Date now = new Date()
+		Permission.deleteAll(Permission.findAllByEndsAtLessThan(now))
 	}
 
 	private boolean hasPermission(Userish userish, resource, Operation op) {
