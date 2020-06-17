@@ -2,6 +2,7 @@ const fetch = require('node-fetch')
 const url = require('url')
 const querystring = require('querystring')
 const FormData = require('form-data')
+const StreamrClient = require('streamr-client')
 
 class StreamrApiRequest {
     constructor(options) {
@@ -51,7 +52,7 @@ class StreamrApiRequest {
         return this
     }
 
-    call() {
+    async call() {
         if (!this.method) {
             throw 'Method not set.'
         }
@@ -214,6 +215,11 @@ class Streams {
             .withBody(body)
     }
 
+    get(id) {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', `streams/${id}`)
+    }
+
     setFields(id, body) {
         return new StreamrApiRequest(this.options)
             .methodAndPath('POST', `streams/${id}/fields`)
@@ -235,18 +241,52 @@ class Streams {
             .withBody(body)
     }
 
-    makePublic(id) {
+    grantPublic(id, operation) {
         return new StreamrApiRequest(this.options)
             .methodAndPath('POST', `streams/${id}/permissions`)
             .withBody({
                 anonymous: true,
-                operation: 'read'
+                operation,
             })
+    }
+
+    grant(id, targetUser, operation) {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('POST', `streams/${id}/permissions`)
+            .withBody({
+                user: targetUser,
+                operation,
+            })
+    }
+
+    getOwnPermissions(id) {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', `streams/${id}/permissions/me`)
+    }
+
+    getValidationInfo(id) {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', `streams/${id}/validation`)
     }
 
     getPublishers(id) {
         return new StreamrApiRequest(this.options)
             .methodAndPath('GET', `streams/${id}/publishers`)
+    }
+
+    getSubscribers(id) {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', `streams/${id}/subscribers`)
+    }
+
+    isPublisher(streamId, address) {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', `streams/${streamId}/publisher/${address}`)
+    }
+
+    isSubscriber(streamId, address) {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', `streams/${streamId}/subscriber/${address}`)
     }
 }
 
@@ -338,6 +378,38 @@ class Permissions {
     }
 }
 
+class DataUnions {
+    constructor(options) {
+        this.options = options
+    }
+
+    list() {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', 'dataunions')
+    }
+}
+
+class NotFound {
+    constructor(options) {
+        this.options = options
+    }
+
+    notFound() {
+        return new StreamrApiRequest(this.options)
+            .methodAndPath('GET', 'page-not-found')
+    }
+
+    withApiKey(apiKey) {
+        this.authHeader = `Token ${apiKey}`
+        return this
+    }
+
+    withSessionToken(sessionToken) {
+        this.authHeader = `Bearer ${sessionToken}`
+        return this
+    }
+}
+
 module.exports = (baseUrl, logging) => {
     const options = {
         baseUrl,
@@ -353,7 +425,9 @@ module.exports = (baseUrl, logging) => {
                 login: new Login(options),
                 products: new Products(options),
                 streams: new Streams(options),
-                subscriptions: new Subscriptions(options)
+                subscriptions: new Subscriptions(options),
+                dataunions: new DataUnions(options),
+                not_found: new NotFound(options),
             }
         }
     }

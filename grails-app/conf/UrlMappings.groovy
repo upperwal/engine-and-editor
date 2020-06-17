@@ -8,6 +8,7 @@ import com.unifina.domain.signalpath.Canvas
 class UrlMappings {
 	static mappings = {
 		"500"(controller: "error", action: "index", exception: Exception)
+		"404"(controller: "error", action: "notFound")
 
 		// API v1 url mappings
 		"/api/v1/signups"(method: "POST", controller: "authApi", action: "signup")
@@ -34,6 +35,7 @@ class UrlMappings {
 		"/api/v1/streams/$id/uploadCsvFile"(method: "POST", controller: "streamApi", action: "uploadCsvFile")
 		"/api/v1/streams/$id/confirmCsvFileUpload"(method: "POST", controller: "streamApi", action: "confirmCsvFileUpload")
 		"/api/v1/streams/$id/dataFiles"(controller: "streamApi", action: "dataFiles")
+		"/api/v1/streams/$id/validation"(method: "GET", controller: "streamApi", action: "validation")
 		"/api/v1/streams/$id/publishers"(controller: "streamApi", action: "publishers")
 		"/api/v1/streams/$id/publisher/$address"(controller: "streamApi", action: "publisher")
 		"/api/v1/streams/$id/subscribers"(controller: "streamApi", action: "subscribers")
@@ -65,7 +67,7 @@ class UrlMappings {
 
 		"/api/v1/users/me/keys"(resources: "keyApi", excludes: ["create", "edit", "update"]) { resourceClass = SecUser }
 		"/api/v1/users/me/keys/$keyId"(method: "PUT", controller: "keyApi", action: "updateUserKey")
-		"/api/v1/users/me/products"(method: "GET", controller: "productApi", action: "index") { operation = Permission.Operation.SHARE }
+		"/api/v1/users/me/products"(method: "GET", controller: "productApi", action: "index") { operation = Permission.Operation.PRODUCT_SHARE }
 		"/api/v1/users/me/changePassword"(method: "POST", controller: "userApi", action: "changePassword")
 		"/api/v1/users/me/image"(method: "POST", controller: "userApi", action: "uploadAvatarImage")
 		"/api/v1/users/me/balance"(method: "GET", controller: "userApi", action: "getCurrentUserBalance")
@@ -107,11 +109,19 @@ class UrlMappings {
 
 		"/api/v1/cluster/$action"(controller: "clusterApi")
 
-		"/api/v1/communities/$communityAddress/joinRequests"(resources: "communityJoinRequestApi", excludes: ["create", "edit"])
-		"/api/v1/communities/$communityAddress/secrets"(resources: "communitySecretApi", excludes: ["create", "edit"])
-		"/api/v1/communities/$communityAddress/stats"(method: "GET", controller: "communityOperatorApi", action: "stats")
-		"/api/v1/communities/$communityAddress/members"(method: "GET", controller: "communityOperatorApi", action: "members")
-		"/api/v1/communities/$communityAddress/members/$memberAddress"(method: "GET", controller: "communityOperatorApi", action: "memberStats")
-		"/api/v1/communities"(method: "GET", controller: "communityOperatorApi", action: "summary")
+		"/api/v1/dataunions/$contractAddress/joinRequests"(resources: "dataUnionJoinRequestApi", excludes: ["create", "edit"])
+		"/api/v1/dataunions/$contractAddress/secrets"(resources: "dataUnionSecretApi", excludes: ["create", "edit"])
+		"/api/v1/dataunions/$contractAddress/stats"(method: "GET", controller: "dataUnionOperatorApi", action: "stats")
+		"/api/v1/dataunions/$contractAddress/members"(method: "GET", controller: "dataUnionOperatorApi", action: "members")
+		"/api/v1/dataunions/$contractAddress/members/$memberAddress"(method: "GET", controller: "dataUnionOperatorApi", action: "memberStats")
+		"/api/v1/dataunions"(method: "GET", controller: "dataUnionOperatorApi", action: "summary")
+
+		// Deprecated aliases of the above, remove once no one is calling them
+		"/api/v1/communities/$contractAddress/joinRequests"(resources: "dataUnionJoinRequestApi", excludes: ["create", "edit"])
+		"/api/v1/communities/$contractAddress/secrets"(resources: "dataUnionSecretApi", excludes: ["create", "edit"])
+		"/api/v1/communities/$contractAddress/stats"(method: "GET", controller: "dataUnionOperatorApi", action: "stats")
+		"/api/v1/communities/$contractAddress/members"(method: "GET", controller: "dataUnionOperatorApi", action: "members")
+		"/api/v1/communities/$contractAddress/members/$memberAddress"(method: "GET", controller: "dataUnionOperatorApi", action: "memberStats")
+		"/api/v1/communities"(method: "GET", controller: "dataUnionOperatorApi", action: "summary")
 	}
 }

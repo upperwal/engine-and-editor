@@ -5,6 +5,7 @@ import com.unifina.api.BadRequestException
 import com.unifina.api.NotFoundException
 import com.unifina.api.NotPermittedException
 import com.unifina.api.StreamListParams
+import com.unifina.api.ValidationException
 import com.unifina.domain.data.Stream
 import com.unifina.domain.security.IntegrationKey
 import com.unifina.domain.security.Key
@@ -185,14 +186,15 @@ class StreamApiControllerSpec extends ControllerSpecification {
 		authenticatedAs(me) { controller.show() }
 
 		then:
-		thrown NotPermittedException
+		NotPermittedException ex = thrown(NotPermittedException)
+		ex.getUser() == me.getUsername()
 	}
 
 	void "shows a Stream of logged in Key"() {
 		Key key = new Key(name: "anonymous key")
 		key.id = "anonymousKeyKey"
 		key.save(failOnError: true)
-		permissionService.systemGrant(key, streamOne, Permission.Operation.READ)
+		permissionService.systemGrant(key, streamOne, Permission.Operation.STREAM_GET)
 
 		when:
 		params.id = streamOne.id
@@ -216,11 +218,38 @@ class StreamApiControllerSpec extends ControllerSpecification {
 		response.status == 401
 	}
 
-	void "update a Stream of logged in user"() {
-		when:
-		params.id = streamOne.id
+	void "update validates fields"() {
+		setup:
 		request.method = "PUT"
-		request.json = '{name: "newName", description: "newDescription", autoConfigure: false, requireSignedData: true, storageDays: 24, inactivityThresholdHours: 99, partitions: 5, requireEncryptedData: true }'
+		params.id = streamOne.id
+		request.JSON = [
+			name: "name",
+			partitions: -4,
+		]
+
+		when:
+		authenticatedAs(me) { controller.update() }
+
+		then:
+		thrown ValidationException
+	}
+
+	void "update a Stream of logged in user"() {
+		setup:
+		request.method = "PUT"
+		params.id = streamOne.id
+		request.JSON = [
+			name: "newName",
+			description: "newDescription",
+			autoConfigure: false,
+			requireSignedData: true,
+			storageDays: 24,
+			inactivityThresholdHours: 99,
+			partitions: 5,
+			requireEncryptedData: true,
+		]
+
+		when:
 		authenticatedAs(me) { controller.update() }
 
 		then:
@@ -245,10 +274,20 @@ class StreamApiControllerSpec extends ControllerSpecification {
 	}
 
 	void "update a Stream of logged in user but do not update undefined fields"() {
-		when:
-		params.id = streamOne.id
+		setup:
 		request.method = "PUT"
-		request.json = '{name: "newName", description: "newDescription", autoConfigure: null, requireSignedData: null, storageDays: null, inactivityThresholdHours: null, requireEncryptedData: null }'
+		params.id = streamOne.id
+		request.json = [
+			name: "newName",
+			description: "newDescription",
+			autoConfigure: null,
+			requireSignedData: null,
+			storageDays: null,
+			inactivityThresholdHours: null,
+			requireEncryptedData: null
+		]
+
+		when:
 		authenticatedAs(me) { controller.update() }
 
 		then:
@@ -272,10 +311,13 @@ class StreamApiControllerSpec extends ControllerSpecification {
 	}
 
 	void "cannot update non-existent Stream"() {
-		when:
-		params.id = "666-666-666"
+		setup:
 		request.method = "PUT"
-		request.json = '{name: "newName", description: "newDescription"}'
+		params.id = "666-666-666"
+		request.json = [
+			name: "some new name",
+		]
+		when:
 		authenticatedAs(me) { controller.update() }
 
 		then:
@@ -283,10 +325,14 @@ class StreamApiControllerSpec extends ControllerSpecification {
 	}
 
 	void "cannot update other user's Stream"() {
-		when:
-		params.id = streamFourId
+		setup:
 		request.method = "PUT"
-		request.json = '{name: "newName", description: "newDescription"}'
+		params.id = streamFourId
+		request.json = [
+			name: "newName",
+			description: "newDescription"
+		]
+		when:
 		authenticatedAs(me) { controller.update() }
 
 		then:
@@ -332,7 +378,7 @@ class StreamApiControllerSpec extends ControllerSpecification {
 		authenticatedAs(me) { controller.setFields()}
 
 		then:
-		1 * apiService.authorizedGetById(Stream, streamOne.id, me, Permission.Operation.WRITE) >> streamOne
+		1 * apiService.authorizedGetById(Stream, streamOne.id, me, Permission.Operation.STREAM_EDIT) >> streamOne
 		streamOne.config == '{"fields":{"field1":"string"}}'
 		response.status == 200
 	}
@@ -345,7 +391,7 @@ class StreamApiControllerSpec extends ControllerSpecification {
 		authenticatedAs(key) { controller.setFields()}
 
 		then:
-		1 * apiService.authorizedGetById(Stream, streamOne.id, key, Permission.Operation.WRITE) >> streamOne
+		1 * apiService.authorizedGetById(Stream, streamOne.id, key, Permission.Operation.STREAM_EDIT) >> streamOne
 		streamOne.config == '{"fields":{"field1":"string"}}'
 		response.status == 200
 	}
